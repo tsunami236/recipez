@@ -1,129 +1,149 @@
-import { StyleSheet, Image, Platform } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+export default function CameraScreen() {
+  const [imageUris, setImageUris] = useState<string[]>([]);
+  const [ocrText, setOcrText] = useState<string>("");
 
-export default function Camera() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="camera.fill"
-          style={styles.headerImage}
-        />
+  const handleImageSelect = async () => {
+    // Ask for permissions to access the media library
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
+    // Launch image picker
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      allowsEditing: true,
+      aspect: [1, 1], // Optional, to crop images into a square
+    });
+
+    if (!pickerResult.canceled) {
+      const newImageUri = pickerResult.assets?.[0].uri;
+      if (newImageUri) {
+        // Update imageUris state to add the new image
+        setImageUris((prevUris) => {
+          const updatedUris = [...prevUris, newImageUri];
+          return updatedUris;
+        });
+
+        // Perform OCR on the selected image
+        await performOCR(newImageUri);
       }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Camera</ThemedText>
-      </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          and{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{" "}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the
-          web version, press <ThemedText type="defaultSemiBold">w</ThemedText>{" "}
-          in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the{" "}
-          <ThemedText type="defaultSemiBold">@2x</ThemedText> and{" "}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to
-          provide files for different screen densities
-        </ThemedText>
-        <Image
-          source={require("@/assets/images/react-logo.png")}
-          style={{ alignSelf: "center" }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{" "}
-          to see how to load{" "}
-          <ThemedText style={{ fontFamily: "SpaceMono" }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{" "}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook
-          lets you inspect what the user's current color scheme is, and so you
-          can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{" "}
-          <ThemedText type="defaultSemiBold">
-            components/HelloWave.tsx
-          </ThemedText>{" "}
-          component uses the powerful{" "}
-          <ThemedText type="defaultSemiBold">
-            react-native-reanimated
-          </ThemedText>{" "}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The{" "}
-              <ThemedText type="defaultSemiBold">
-                components/ParallaxScrollView.tsx
-              </ThemedText>{" "}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    }
+  };
+
+  const performOCR = async (imageUri: string) => {
+    try {
+      // Convert the image to Base64
+      const base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Debug: Log the Base64 string to ensure it's correctly formatted
+      console.log("Base64 Image String:", base64.substring(0, 100)); // Log a snippet to avoid logging large strings
+
+      // Call Google Vision API to recognize text
+      const text = await callGoogleVisionAPI(base64);
+
+      // Update state with OCR text
+      setOcrText(text);
+
+      // Log the recognized text to check
+      console.log("Recognized Text:", text);
+    } catch (error) {
+      console.error("OCR failed", error);
+    }
+  };
+
+  const callGoogleVisionAPI = async (base64: string) => {
+    const API_KEY = "AIzaSyDS2ywDv7v0x4ufI2T9575HgvpWdRkanno"; // Replace with your actual API key
+
+    const body = {
+      requests: [
+        {
+          image: {
+            content: base64,
+          },
+          features: [{ type: "TEXT_DETECTION", maxResults: 1 }],
+        },
+      ],
+    };
+
+    try {
+      const response = await fetch(
+        `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
+
+      // Debug: Check if the response is valid
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      return result.responses?.[0]?.fullTextAnnotation?.text || "";
+    } catch (error) {
+      console.error("Error calling Google Vision API:", error);
+      return "";
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.imageButton} onPress={handleImageSelect}>
+        <Text style={styles.imgbtntext}>+</Text>
+      </TouchableOpacity>
+      {imageUris.map((uri, index) => (
+        <View key={index} style={styles.imageWrapper}>
+          <Image source={{ uri }} style={styles.imagePreview} />
+        </View>
+      ))}
+      <Text style={styles.ocrText}>{ocrText}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
+  imageButton: {
+    borderColor: "#4A3228",
+    borderWidth: 2.5,
+    width: 60,
+    height: 60,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    marginRight: 10,
   },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
+  imgbtntext: {
+    color: "#4A3228",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  imageWrapper: {
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  imagePreview: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+  },
+  ocrText: {
+    marginTop: 20,
+    fontSize: 14,
+    color: "gray",
   },
 });
