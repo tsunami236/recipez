@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   Alert,
   Button,
+  Switch
 } from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import React, { useEffect, useState } from "react";
 import {
@@ -25,92 +25,147 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { db, app, storage } from "../firebaseConfig";
+import { TextInput } from "react-native-gesture-handler";
 
 export default function HomeScreen() {
-  const getRecipeList = async () => {
-    try {
-      const docRef = doc(db, "Recipes", "recipeList");
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        console.log("📄 Recipe Data:", data);
-        // you can now use `data` in your app (e.g., setState)
-      } else {
-        console.log("❌ No such document!");
-      }
-    } catch (error) {
-      console.error("🔥 Error getting document:", error);
-    }
-  };
+  const [dishType, setDishType] = useState("");
+  const [dietaryRestrictions, setDietaryRestrictions] = useState("");
+  const [useRestrictions, setUseRestrictions] = useState(false);
+  const [useIngredients, setUseIngredients] = useState(false);
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <Button title="Press Me" onPress={() => getRecipeList()}></Button>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: "cmd + d",
-              android: "cmd + m",
-              web: "F12",
-            })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{" "}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#FFFCF8" }}>
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerText}>Recipez 🍳</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View>
+          <TouchableOpacity style={styles.generateBtn}>
+            <Text style={styles.btnText}>Generate Recipe</Text>
+          </TouchableOpacity>
+
+          <View style={styles.option}>
+            <Text style={styles.title}>Dish Type:</Text>
+            <TextInput
+              placeholder="Ex. Breakfast"
+              value={dishType}
+              onChangeText={setDishType}
+              style={styles.textbox}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <Text style={styles.header}>Dietary Restrictions:</Text>
+            <View style={styles.toggleView}>
+              <Text>Use your restrictions</Text>
+              <Switch
+                trackColor={{ false: "#FFF2EB", true: "#DA7635" }}
+                thumbColor={useRestrictions ? "#fff" : "#f4f3f4"}
+                onValueChange={() => setUseRestrictions(prev => !prev)}
+                value={useRestrictions}
+              />
+            </View>
+            <TextInput
+              placeholder="Ex. Vegan"
+              value={dietaryRestrictions}
+              onChangeText={setDietaryRestrictions}
+              style={styles.textbox}
+            />
+          </View>
+
+          <View style={styles.option}>
+            <Text style={styles.header}>Ingredients:</Text>
+            <View style={styles.toggleView}>
+              <Text>Use all of your ingredients</Text>
+              <Switch
+                trackColor={{ false: "#FFF2EB", true: "#DA7635" }}
+                thumbColor={useIngredients ? "#fff" : "#f4f3f4"}
+                onValueChange={() => setUseIngredients(prev => !prev)}
+                value={useIngredients}
+              />
+            </View>
+            {!useIngredients && (
+              <TouchableOpacity style={styles.fridgeBtn}>
+                <Text style={styles.fridgeBtnTxt}>Select from fridge</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+        </View>
+      </ScrollView>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
+  scrollContainer: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#FFFCF8",
+  },
+  headerContainer: {
+    marginTop: 50,
+    marginBottom: 10,
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
     alignItems: "center",
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  headerText: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#2c3e50",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
+  generateBtn: {
+    backgroundColor: "#DA7635",
+    borderRadius: 5,
+    width: 230,
+    display: "flex",
+    alignSelf: "center",
+    alignItems: "center",
+  },
+  btnText: {
+    fontWeight: "bold",
+    fontSize: 24,
+    color: "#FFFCF8",
+    margin: 7
+  },
+  option: {
+    margin: 20,
+    gap: 10
+  },
+  title: {
+    fontWeight: "bold",
+    fontSize: 20
+  },
+  textbox: {
+    backgroundColor: "#FFF2EB",
+    borderRadius: 5,
+    height: 50,
+    padding: 10
+  },
+  toggleView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  fridgeBtn: {
+    backgroundColor: "#DA7635",
+    borderRadius: 5,
+    width: 230,
+    display: "flex",
+    alignSelf: "center",
+    alignItems: "center",
+  },
+  fridgeBtnTxt: {
+    fontSize: 18,
+    color: "#FFFCF8",
+    margin: 7
+  }
 });
