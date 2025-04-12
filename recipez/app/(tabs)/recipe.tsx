@@ -1,129 +1,220 @@
-import { StyleSheet, Image, Platform } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, Button, TextInput, Modal, ScrollView} from "react-native";
 
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import Ionicons from '@expo/vector-icons/Ionicons';
+
+import React, { useState } from 'react';
+
+
 
 export default function recipe() {
+  const [recipes, setRecipes] = useState([
+    { title: "Chicken Stir Fry", subtitle: "Quick-fried chicken with colorful..." },
+    { title: "Grilled Cheese Sandwich", subtitle: "Golden, buttery bread stuffed..." },
+    { title: "Baked Lemon Garlic Salmon", subtitle: "Flaky salmon fillet baked..." },
+    { title: "Creamy Tomato Pasta", subtitle: "Pasta tossed in a rich, creamy..." },
+  ]);
+
+  /*
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [currentRecipe, setCurrentRecipe] = useState(null);
+  const [editedTitle, setEditedTitle] = useState('');
+  const [editedSubtitle, setEditedSubtitle] = useState('');
+
+  const handleEdit = (recipe) => {
+    setCurrentRecipe(recipe);
+    setEditedTitle(recipe.title);
+    setEditedSubtitle(recipe.subtitle);
+    setEditModalVisible(true);
+  };
+
+  const saveEdit = () => {
+    const updated = recipes.map((r) =>
+      r.title === currentRecipe.title
+        ? { ...r, title: editedTitle, subtitle: editedSubtitle }
+        : r
+    );
+    setRecipes(updated);
+    setEditModalVisible(false);
+  };
+
+  <TouchableOpacity onPress={() => handleEdit(item)}>
+                <Ionicons name="pencil" size={20} color="black" style={styles.icon} />
+              </TouchableOpacity>
+
+  */
+
+  /* MODAL FOR EDITING
+      <Modal visible={editModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text>Edit Recipe</Text>
+            <TextInput
+              value={editedTitle}
+              onChangeText={setEditedTitle}
+              style={styles.input}
+              placeholder="Title"
+            />
+            <TextInput
+              value={editedSubtitle}
+              onChangeText={setEditedSubtitle}
+              style={styles.input}
+              placeholder="Subtitle"
+            />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+              <Button title="Cancel" onPress={() => setEditModalVisible(false)} />
+              <Button title="Save" onPress={saveEdit} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      */
+  
+  const handleDelete = (itemToDelete) => {
+    setRecipes(recipes.filter(item => item.title !== itemToDelete.title));
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>
-        This app includes example code to help you get started.
-      </ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          and{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{" "}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the
-          web version, press <ThemedText type="defaultSemiBold">w</ThemedText>{" "}
-          in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the{" "}
-          <ThemedText type="defaultSemiBold">@2x</ThemedText> and{" "}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to
-          provide files for different screen densities
-        </ThemedText>
-        <Image
-          source={require("@/assets/images/react-logo.png")}
-          style={{ alignSelf: "center" }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText>{" "}
-          to see how to load{" "}
-          <ThemedText style={{ fontFamily: "SpaceMono" }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{" "}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook
-          lets you inspect what the user's current color scheme is, and so you
-          can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{" "}
-          <ThemedText type="defaultSemiBold">
-            components/HelloWave.tsx
-          </ThemedText>{" "}
-          component uses the powerful{" "}
-          <ThemedText type="defaultSemiBold">
-            react-native-reanimated
-          </ThemedText>{" "}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The{" "}
-              <ThemedText type="defaultSemiBold">
-                components/ParallaxScrollView.tsx
-              </ThemedText>{" "}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <View style={styles.container}>
+
+      <Text style={styles.title}>Your Recipes:</Text>
+
+      <View style={styles.filterContainer}>
+        <Text style={styles.filterLabel}>Filter by:</Text>
+        <View style={styles.filterChip}>
+          <Text style={styles.filterText}>&lt; newest &gt;</Text>
+        </View>
+      </View>
+
+      <ScrollView style={styles.recipeList}>
+        {recipes.map((item, index) => (
+          <TouchableOpacity>
+          <View key={index} style={styles.recipeCard}>
+            <View>
+              <Text style={styles.recipeTitle}>{item.title}</Text>
+              <Text style={styles.recipeSubtitle}>{item.subtitle}</Text>
+            </View>
+
+            <View style={styles.icons}>
+              <TouchableOpacity onPress={() => handleDelete(item)}>
+                <Ionicons name="trash" size={20} color="black" />
+              </TouchableOpacity> 
+            </View>
+            
+          </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <TouchableOpacity style={styles.fab}>
+        <Ionicons name="add" size={30} color="white" />
+      </TouchableOpacity>
+
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    backgroundColor: '#FFF6F1',
   },
-  titleContainer: {
-    flexDirection: "row",
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  filterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
     gap: 8,
   },
+  filterLabel: {
+    fontSize: 16,
+  },
+  filterChip: {
+    backgroundColor: '#E6F4EA',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  filterText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  recipeList: {
+    marginTop: 20,
+  },
+  recipeCard: {
+  backgroundColor: '#FDBFAF',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  recipeTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  recipeSubtitle: {
+    fontSize: 13,
+    color: '#444',
+  },
+  icons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  fab: {
+    backgroundColor: 'black',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    position: 'absolute',
+    bottom: 70,
+    right: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 5,
+  },
+  bottomNav: {
+    height: 50,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 6,
+    marginTop: 10,
+  },
+
 });
