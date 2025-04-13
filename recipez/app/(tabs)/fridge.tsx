@@ -282,7 +282,7 @@ export default function Fridge() {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setShowAddForm((prev) => !prev)}>
           <View style={styles.plusButton}>
-            <Text style={styles.plusText}>+</Text>
+            <Text style={styles.plusText}>+ Add</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -393,21 +393,22 @@ const styles = StyleSheet.create({
     marginRight: 50,
   },
   plusButton: {
-    backgroundColor: "#FFFCF8",
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
-    borderWidth: 2,
-    borderColor: "#000000",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderColor: '#DA7635',
+    borderWidth: 1.5,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 10,
+    backgroundColor: '#FFFCF8',
+    alignSelf: 'center',
   },
   plusText: {
-    color: "#000000",
-    fontSize: 36,
-    lineHeight: 36,
-    fontWeight: "bold",
+    color: '#DA7635',
+    fontSize: 16,
+    fontWeight: '500',
+    marginLeft: 6,
   },
   ocrText: {
     marginTop: 20,
