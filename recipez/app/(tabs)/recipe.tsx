@@ -87,8 +87,8 @@ export default function recipe() {
 
       <ScrollView style={styles.recipeList}>
         {recipes.map((item, index) => (
-          <TouchableOpacity>
-          <View key={index} style={styles.recipeCard}>
+          <TouchableOpacity key={index}>
+          <View style={styles.recipeCard}>
             <View>
               <Text style={styles.recipeTitle}>{item.title}</Text>
               <Text style={styles.recipeSubtitle}>{item.subtitle}</Text>
