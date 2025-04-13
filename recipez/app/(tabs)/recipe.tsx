@@ -107,11 +107,11 @@ export default function recipe() {
       <ScrollView style={styles.recipeList}>
         {recipes.map((item, index) => (
           <TouchableOpacity key={index}>
-          <View style={styles.recipeCard}>
-            <View>
-              <Text style={styles.recipeTitle}>{item.title}</Text>
-              <Text style={styles.recipeSubtitle}>{item.subtitle}</Text>
-            </View>
+            <View style={styles.recipeCard}>
+              <View>
+                <Text style={styles.recipeTitle}>{item.title}</Text>
+                <Text style={styles.recipeSubtitle}>{item.subtitle}</Text>
+              </View>
 
               <View style={styles.icons}>
                 <TouchableOpacity onPress={() => handleDelete(item)}>
