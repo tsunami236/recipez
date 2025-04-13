@@ -26,6 +26,8 @@ Recipez is a cooking app for new cooks. Sometimes the most challenging part abou
   <img width="390" alt="Screenshot 2025-04-13 at 6 56 22 AM" src="https://github.com/user-attachments/assets/65af2c7f-a5b3-42d5-92a9-d464745a3ec8" width="30%"/>
   <img width="386" alt="Screenshot 2025-04-13 at 7 15 17 AM" src="https://github.com/user-attachments/assets/83e9ace9-9562-4092-9c93-28c792123f5e" width="30%"/>
   <img width="378" alt="Screenshot 2025-04-13 at 6 58 37 AM" src="https://github.com/user-attachments/assets/3bfa37ab-d496-46ed-bf82-de537182a369" width="30%"/>
+  <img width="382" alt="Screenshot 2025-04-13 at 6 57 28 AM" src="https://github.com/user-attachments/assets/895ea463-0334-4bfc-958f-7b9e196d47a9" width="30%"/>
+
 </div>
 
 
