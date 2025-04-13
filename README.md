@@ -14,6 +14,8 @@ Recipez is a cooking app for new cooks. Sometimes the most challenging part abou
 ## Designs
 ### Low Fidelity Wireframes
 ![IMG_53D3FE90E7CD-1](https://github.com/user-attachments/assets/22bf1e2c-9d75-46b0-8e95-aa0354d993b3)
+![image](https://github.com/user-attachments/assets/e217002a-a912-43b3-a54f-79e17471833f)
+
 
 ### High Fidelity Figma Designs
 ![image](https://github.com/user-attachments/assets/82ee6fad-1552-46bc-b1e2-a8e589769e4b)
