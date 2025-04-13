@@ -32,6 +32,8 @@ import {
 import { db, app, storage } from "../firebaseConfig";
 import { TextInput } from "react-native-gesture-handler";
 import Feather from "@expo/vector-icons/Feather";
+import { useRouter } from "expo-router";
+import { fetchGeminiResponse } from "../../hooks/useGemini";
 
 export default function HomeScreen() {
   const [dishType, setDishType] = useState("");
@@ -133,6 +135,55 @@ export default function HomeScreen() {
     );
   };
 
+  const router = useRouter();
+
+  const handleGenerate = async () => {
+    router.push("/generating");
+
+    let ingredients = "";
+
+    if (useIngredients) {
+      try {
+        const querySnapshot = await getDocs(
+          collection(db, "Users", "0Qa8zrf8HHb0VKboLAjV", "fridge")
+        );
+        const ingredientList: string[] = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (data.ingredient) {
+            ingredientList.push(data.ingredient);
+          }
+        });
+
+        console.log("Retrieved ingredients:", ingredientList);
+        ingredients = ingredientList.join(", ");
+      } catch (error) {
+        console.error("Error fetching fridge ingredients:", error);
+      }
+    }
+
+    const prompt = `Give me a few easy ${dishType} recipes ${
+      useRestrictions
+        ? `that follow these dietary restrictions: ${dietaryRestrictions}`
+        : ""
+    } using only the following ingredients: ${ingredients}. return the recipes in the following format: Dish Name\nShort Description\nTime (to cook)\nServings (number)\n
+      Cuisine\nList of Ingredients (string array)\nInstructions (string array)\nNutrition Information (in the following format):\n
+      Calories\nProtein\nCarbohydrates\nSugar\nFat\nSaturated Fat\nFiber\nSodium\nCalcium\nIron. Remember that for the ingredients make the array with the ingredients and the quantity needed.`;
+
+    try {
+      const recipes = await fetchGeminiResponse(prompt); // returns a string[] or structured data
+      console.log(recipes);
+      router.replace({
+        pathname: "/recipe",
+        params: { data: JSON.stringify(recipes) },
+      });
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+      Alert.alert("Error", "Something went wrong generating recipes.");
+    }
+  };
+
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: "#FFFCF8" }}>
       <View style={styles.headerContainer}>
@@ -140,7 +191,7 @@ export default function HomeScreen() {
       </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View>
-          <TouchableOpacity style={styles.generateBtn}>
+          <TouchableOpacity style={styles.generateBtn} onPress={handleGenerate}>
             <Text style={styles.btnText}>Generate Recipe</Text>
           </TouchableOpacity>
 

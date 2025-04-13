@@ -106,7 +106,7 @@ export default function recipe() {
       </View>
     */
 
-      <View style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Your Recipes:</Text>
 
       <View style={styles.filterContainer}>
@@ -134,7 +134,6 @@ export default function recipe() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
     </View>
   );
 }
@@ -155,9 +154,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 12,
     gap: 8,
-    justifyContent: "flex-end"
+    justifyContent: "flex-end",
   },
-  
+
   filterLabel: {
     fontSize: 16,
   },
