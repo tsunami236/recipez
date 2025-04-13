@@ -94,7 +94,19 @@ export default function recipe() {
   };
 
   return (
+    /*
     <View style={styles.container}>
+      <Text style={styles.title}>Your Recipes:</Text>
+
+      <View>
+        <Text style={styles.filterLabel}>Filter by:</Text>
+        <View style={styles.filterChip}>
+          <Text style={styles.filterText}>&lt; newest &gt;</Text>
+        </View>
+      </View>
+    */
+
+      <View style={styles.container}>
       <Text style={styles.title}>Your Recipes:</Text>
 
       <View style={styles.filterContainer}>
@@ -123,9 +135,6 @@ export default function recipe() {
         ))}
       </ScrollView>
 
-      <TouchableOpacity style={styles.fab}>
-        <Ionicons name="add" size={30} color="white" />
-      </TouchableOpacity>
     </View>
   );
 }
@@ -146,22 +155,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 12,
     gap: 8,
-    backgroundColor: "yellow",
+    justifyContent: "flex-end"
   },
-  titleGreen: {
-    backgroundColor: "green",
-  },
-  hello: {
-    marginTop: 20,
-    marginRight: 50,
-    fontSize: 100,
-    color: "purple",
-  },
+  
   filterLabel: {
     fontSize: 16,
   },
   filterChip: {
-    backgroundColor: "#E6F4EA",
+    backgroundColor: "#D6D4A0",
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   recipeCard: {
-    backgroundColor: "#FDBFAF",
+    backgroundColor: "#FFCDAD",
     padding: 12,
     borderRadius: 12,
     marginBottom: 12,
