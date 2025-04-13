@@ -20,7 +20,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Checkbox } from "expo-checkbox";
 
-import React, { useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   getFirestore,
   doc,
@@ -86,15 +86,44 @@ export default function HomeScreen() {
 
   const [fridgeItems, setFridgeItems] = useFridgeItems("0Qa8zrf8HHb0VKboLAjV");
 
-  const toggleSelection = (id: string) => {
+  const toggleSelection = useCallback((id: string) => {
     setFridgeItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, selected: !item.selected } : item
+      prev.map(
+        (item) =>
+          item.id === id ? { ...item, selected: !item.selected } : item // keep reference for unchanged items
       )
     );
-  };
+  }, []);
+
+  // 1. Memoized FridgeItem component
+  const FridgeItem = memo(({ item, onToggle }) => {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginVertical: 5,
+        }}
+      >
+        <Checkbox
+          value={item.selected}
+          onValueChange={() => onToggle(item.id)}
+          color={item.selected ? "#DA7635" : undefined}
+        />
+        <Text style={styles.item}>{item.ingredient.toLowerCase()}</Text>
+      </View>
+    );
+  });
 
   const FridgePopup = ({ visible, onClose, fridgeItems, toggleSelection }) => {
+    // 2. Memoize the toggleSelection wrapper
+    const handleToggle = useCallback(
+      (id) => {
+        toggleSelection(id);
+      },
+      [toggleSelection]
+    );
+
     return (
       <Modal transparent animationType="fade" visible={visible}>
         <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
@@ -109,25 +138,14 @@ export default function HomeScreen() {
               }}
             >
               <Text style={styles.ingredientsTitle}>Ingredients</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <TouchableOpacity onPress={onClose}>
                 <Feather name="x" size={20} color="black" />
               </TouchableOpacity>
             </View>
+
+            {/* Render memoized items */}
             {fridgeItems.map((item) => (
-              <View
-                key={item.id}
-                style={[
-                  styles.itemWrapper,
-                  { flexDirection: "row", alignItems: "center" },
-                ]}
-              >
-                <Checkbox
-                  value={item.selected}
-                  onValueChange={() => toggleSelection(item.id)}
-                  color={item.selected ? "#DA7635" : undefined}
-                />
-                <Text style={styles.item}>{item.ingredient.toLowerCase()}</Text>
-              </View>
+              <FridgeItem key={item.id} item={item} onToggle={handleToggle} />
             ))}
           </View>
         </BlurView>
@@ -289,14 +307,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerText: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#2c3e50",
+    fontSize: 20,
+    fontFamily: "Poppins",
   },
   header: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    fontFamily: "Poppins",
   },
   generateBtn: {
     backgroundColor: "#DA7635",
@@ -305,12 +323,14 @@ const styles = StyleSheet.create({
     display: "flex",
     alignSelf: "center",
     alignItems: "center",
+    fontFamily: "Poppins",
   },
   btnText: {
     fontWeight: "bold",
     fontSize: 24,
     color: "#FFFCF8",
     margin: 7,
+    fontFamily: "Poppins",
   },
   option: {
     margin: 20,
@@ -319,12 +339,14 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold",
     fontSize: 20,
+    fontFamily: "Poppins",
   },
   textbox: {
     backgroundColor: "#FFF2EB",
     borderRadius: 5,
     height: 50,
     padding: 10,
+    fontFamily: "Poppins",
   },
   toggleView: {
     flexDirection: "row",
@@ -335,15 +357,17 @@ const styles = StyleSheet.create({
   fridgeBtn: {
     backgroundColor: "#DA7635",
     borderRadius: 5,
-    width: 230,
+    width: 300,
     display: "flex",
     alignSelf: "center",
     alignItems: "center",
+    height: 50,
   },
   fridgeBtnTxt: {
-    fontSize: 18,
+    fontSize: 25,
     color: "#FFFCF8",
-    margin: 7,
+    margin: 8,
+    fontFamily: "Poppins",
   },
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
   openButton: {
@@ -351,7 +375,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
   },
-  buttonText: { color: "white", fontWeight: "bold" },
+  buttonText: { color: "white", fontWeight: "bold", fontFamily: "Poppins" },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
   },

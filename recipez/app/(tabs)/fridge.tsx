@@ -13,14 +13,12 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
-import addReceipt from '@/hooks/addReceipt';
-
-
+import addReceipt from "@/hooks/addReceipt";
 
 export default function Fridge() {
   const [items, setItems] = useState([
-    { id: 1, name: 'eggs', amount: 10 },
-    { id: 2, name: 'cabbage', amount: 2 },
+    { id: 1, name: "eggs", amount: 10 },
+    { id: 2, name: "cabbage", amount: 2 },
   ]);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   //const [newAmount, setNewAmount] = useState<string>('');
@@ -69,143 +67,143 @@ export default function Fridge() {
   const [ocrText, setOcrText] = useState<string>("");
   const [imageUris, setImageUris] = useState<string[]>([]);
 
-  const{fetchGemini,loading,response,error} = addReceipt();
+  const { fetchGemini, loading, response, error } = addReceipt();
 
-  
   useEffect(() => {
     if (response && !loading && !error) {
       // Convert "milk, eggs, carrots" into individual item objects
       const itemsFromResponse = response
-        .split(',')
-        .map(name => name.trim())
-        .filter(name => !!name)
-        .map(name => ({
+        .split(",")
+        .map((name) => name.trim())
+        .filter((name) => !!name)
+        .map((name) => ({
           id: Date.now() + Math.random(), // unique id
           name,
           amount: 1, // default amount
         }));
-  
-        setItems(prevItems => {
-          const updatedItems = [...prevItems];
-        
-          itemsFromResponse.forEach(newItem => {
-            const index = updatedItems.findIndex(
-              item => item.name.toLowerCase() === newItem.name.toLowerCase()
-            );
-        
-            if (index !== -1) {
-              // Item already exists: increment its amount
-              updatedItems[index] = {
-                ...updatedItems[index],
-                amount: updatedItems[index].amount + newItem.amount,
-              };
-            } else {
-              // New item: add it
-              updatedItems.push(newItem);
-            }
-          });
-        
-          return updatedItems;
+
+      setItems((prevItems) => {
+        const updatedItems = [...prevItems];
+
+        itemsFromResponse.forEach((newItem) => {
+          const index = updatedItems.findIndex(
+            (item) => item.name.toLowerCase() === newItem.name.toLowerCase()
+          );
+
+          if (index !== -1) {
+            // Item already exists: increment its amount
+            updatedItems[index] = {
+              ...updatedItems[index],
+              amount: updatedItems[index].amount + newItem.amount,
+            };
+          } else {
+            // New item: add it
+            updatedItems.push(newItem);
+          }
         });
-  
+
+        return updatedItems;
+      });
+
       // Optional: reset OCR text so it doesn’t show again
       //setOcrText('');
     }
   }, [response, loading, error]); // Only runs when response (or related states) change
-  
 
   const handleImageSelect = async () => {
-      // Ask for permissions to access the media library
-      const permissionResult =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-  
-      if (permissionResult.granted === false) {
-        alert("Permission to access media library is required!");
-        return;
+    // Ask for permissions to access the media library
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
+    // Launch image picker
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      allowsEditing: true,
+      aspect: [1, 1], // Optional, to crop images into a square
+    });
+
+    if (!pickerResult.canceled) {
+      const newImageUri = pickerResult.assets?.[0].uri;
+      if (newImageUri) {
+        // Update imageUris state to add the new image
+        setImageUris((prevUris) => {
+          const updatedUris = [...prevUris, newImageUri];
+          return updatedUris;
+        });
+
+        // Perform OCR on the selected image
+        await performOCR(newImageUri);
       }
-  
-      // Launch image picker
-      const pickerResult = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-        allowsEditing: true,
-        aspect: [1, 1], // Optional, to crop images into a square
+    }
+  };
+
+  const performOCR = async (imageUri: string) => {
+    try {
+      // Convert the image to Base64
+      const base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
       });
-  
-      if (!pickerResult.canceled) {
-        const newImageUri = pickerResult.assets?.[0].uri;
-        if (newImageUri) {
-          // Update imageUris state to add the new image
-          setImageUris((prevUris) => {
-            const updatedUris = [...prevUris, newImageUri];
-            return updatedUris;
-          });
-  
-          // Perform OCR on the selected image
-          await performOCR(newImageUri);
-        }
-      }
+
+      // Debug: Log the Base64 string to ensure it's correctly formatted
+      console.log("Base64 Image String:", base64.substring(0, 100)); // Log a snippet to avoid logging large strings
+
+      // Call Google Vision API to recognize text
+      const text = await callGoogleVisionAPI(base64);
+
+      fetchGemini(
+        "Write a string that contains all the food items on this receipt in the following format: item1, item2, item3, etc. Omit any brand names and return the most standardized name for each item in all lowercase." +
+          text
+      );
+
+      // Log the recognized text to check
+      console.log("Recognized Text:", text);
+    } catch (error) {
+      console.error("OCR failed", error);
+    }
+  };
+
+  const callGoogleVisionAPI = async (base64: string) => {
+    const API_KEY = "AIzaSyDS2ywDv7v0x4ufI2T9575HgvpWdRkanno"; // Replace with your actual API key
+
+    const body = {
+      requests: [
+        {
+          image: {
+            content: base64,
+          },
+          features: [{ type: "TEXT_DETECTION", maxResults: 1 }],
+        },
+      ],
     };
 
-    const performOCR = async (imageUri: string) => {
-        try {
-          // Convert the image to Base64
-          const base64 = await FileSystem.readAsStringAsync(imageUri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-    
-          // Debug: Log the Base64 string to ensure it's correctly formatted
-          console.log("Base64 Image String:", base64.substring(0, 100)); // Log a snippet to avoid logging large strings
-    
-          // Call Google Vision API to recognize text
-          const text = await callGoogleVisionAPI(base64);
-
-          fetchGemini("Write a string that contains all the food items on this receipt in the following format: item1, item2, item3, etc. Omit any brand names and return the most standardized name for each item in all lowercase." + text);
-          
-          // Log the recognized text to check
-          console.log("Recognized Text:", text);
-        } catch (error) {
-          console.error("OCR failed", error);
+    try {
+      const response = await fetch(
+        `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
         }
-      };
+      );
 
-      const callGoogleVisionAPI = async (base64: string) => {
-        const API_KEY = "AIzaSyDS2ywDv7v0x4ufI2T9575HgvpWdRkanno"; // Replace with your actual API key
-    
-        const body = {
-          requests: [
-            {
-              image: {
-                content: base64,
-              },
-              features: [{ type: "TEXT_DETECTION", maxResults: 1 }],
-            },
-          ],
-        };
-    
-        try {
-          const response = await fetch(
-            `https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(body),
-            }
-          );
-    
-          // Debug: Check if the response is valid
-          const result = await response.json();
-          console.log("API Response:", result);
-    
-          return result.responses?.[0]?.fullTextAnnotation?.text || "";
-        } catch (error) {
-          console.error("Error calling Google Vision API:", error);
-          return "";
-        }
-      };
-    
+      // Debug: Check if the response is valid
+      const result = await response.json();
+      console.log("API Response:", result);
+
+      return result.responses?.[0]?.fullTextAnnotation?.text || "";
+    } catch (error) {
+      console.error("Error calling Google Vision API:", error);
+      return "";
+    }
+  };
 
   return (
     <View style={styles.background}>
@@ -326,17 +324,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     flex: 1,
-    
   },
   itemTitle: {
     fontSize: 20,
     fontFamily: "Poppins",
     color: "#000000",
     justifyContent: "flex-start",
-    fontFamily: 'Poppins',
-    color: '#000000',
-    justifyContent: 'flex-start',
-    
+    fontFamily: "Poppins",
+    color: "#000000",
+    justifyContent: "flex-start",
   },
   itemAmount: {
     fontSize: 16,
@@ -411,7 +407,7 @@ const styles = StyleSheet.create({
     color: "#000000",
     fontSize: 36,
     lineHeight: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   ocrText: {
     marginTop: 20,

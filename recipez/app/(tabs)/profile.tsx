@@ -69,7 +69,7 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   heading: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#000000",
     marginTop: 60,

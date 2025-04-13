@@ -107,7 +107,7 @@ export default function recipe() {
     */
 
     <View style={styles.container}>
-      <Text style={styles.title}>Your Recipes:</Text>
+      <Text style={styles.title}>Your Recipes</Text>
 
       <View style={styles.filterContainer}>
         <Text style={styles.filterLabel}>Filter by:</Text>
@@ -143,11 +143,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 60,
     paddingHorizontal: 20,
-    backgroundColor: "#FFF6F1",
+    backgroundColor: "#ffffff",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    fontFamily: "Poppins",
   },
   filterContainer: {
     flexDirection: "row",
@@ -185,6 +186,7 @@ const styles = StyleSheet.create({
   recipeTitle: {
     fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 10,
   },
   recipeSubtitle: {
     fontSize: 13,
