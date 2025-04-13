@@ -29,7 +29,7 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
-import { db, app, storage } from "../firebaseConfig";
+import { db, app, storage } from "../../firebaseConfig";
 import { TextInput } from "react-native-gesture-handler";
 import Feather from "@expo/vector-icons/Feather";
 
