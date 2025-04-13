@@ -124,7 +124,7 @@ export default function HomeScreen() {
                   onValueChange={() => toggleSelection(item.id)}
                   color={item.selected ? "#DA7635" : undefined}
                 />
-                <Text style={styles.item}>{item.ingredient}</Text>
+                <Text style={styles.item}>{item.ingredient.toLowerCase()}</Text>
               </View>
             ))}
           </View>
