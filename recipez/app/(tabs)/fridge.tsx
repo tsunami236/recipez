@@ -8,7 +8,11 @@ export default function Fridge() {
     { id: 2, name: 'Cabbage', amount: 2 },
   ]);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
-  const [newAmount, setNewAmount] = useState<string>('');
+  //const [newAmount, setNewAmount] = useState<string>('');
+
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newAmount, setNewAmount] = useState('');
 
   const handleEditAmount = (id: number) => {
     setEditingItemId(id);
@@ -24,12 +28,27 @@ export default function Fridge() {
         item.id === id ? { ...item, amount: parseInt(newAmount) } : item
       )
     );
-    setEditingItemId(null);  
-    setNewAmount('');       
+    setEditingItemId(null); 
+    setNewAmount('');      
   };
 
   const handleDelete = (idToRemove: number) => {
     setItems(prevItems => prevItems.filter(item => item.id !== idToRemove));
+  };
+
+  const handleAdd = () => {
+    if (!newName.trim() || !newAmount.trim()) return;
+
+    const newItem = {
+      id: Date.now(), // simple unique id
+      name: newName,
+      amount: parseInt(newAmount),
+    };
+
+    setItems(prevItems => [...prevItems, newItem]);
+    setNewName('');
+    setNewAmount('');
+    setShowAddForm(false);
   };
 
   return (
@@ -72,6 +91,28 @@ export default function Fridge() {
               </View>
             </View>
           ))}
+          {showAddForm && (
+            <View style={styles.formBox}>
+              <TextInput
+                style={styles.input}
+                placeholder="Food Name (ex: Eggs)"
+                placeholderTextColor= '#888'
+                value={newName}
+                onChangeText={setNewName}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Amount (ex: 3)"
+                placeholderTextColor= '#888'
+                value={newAmount}
+                onChangeText={setNewAmount}
+                keyboardType="numeric"
+              />
+              <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+                <Text style={styles.addButtonText}>Add</Text>
+              </TouchableOpacity>
+              </View>
+          )}
         </ScrollView>
       </View>
 
@@ -81,7 +122,7 @@ export default function Fridge() {
             <Text style={styles.addItemBoxText}>Add With Receipt</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => setShowAddForm(prev => !prev)}>
           <View style={styles.plusButton}>
             <Text style={styles.plusText}>+</Text>
           </View>
@@ -141,15 +182,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+  formBox: {
+    backgroundColor: '#f4f4f4',
+    padding: 15,
+    borderRadius: 10,
+    marginVertical: 20,
+  },
   input: {
     backgroundColor: '#fff',
-    padding: 8,
-    borderRadius: 5,
+    padding: 12,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ccc',
+    fontFamily: 'Poppins',
+    marginBottom: 12,
     fontSize: 16,
-    width: 60,
-    textAlign: 'center',
+    color: '#000',
+  },
+  addButton: {
+    backgroundColor: '#DA7635',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontFamily: 'Poppins',
+    fontSize: 16,
   },
   addItemBox: {
     backgroundColor: '#DA7635',
