@@ -20,7 +20,6 @@ Recipez is a cooking app for new cooks. Sometimes the most challenging part abou
 
 
 ## App Screens
-![image](https://github.com/user-attachments/assets/0e632e3a-bb21-408e-8ffc-4410bc3b00d7)
 
 
 ## Built With
