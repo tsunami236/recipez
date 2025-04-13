@@ -18,6 +18,7 @@ import { BlurView } from "expo-blur";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Checkbox } from "expo-checkbox";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -30,6 +31,7 @@ import {
 } from "firebase/firestore";
 import { db, app, storage } from "../firebaseConfig";
 import { TextInput } from "react-native-gesture-handler";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function HomeScreen() {
   const [dishType, setDishType] = useState("");
@@ -90,22 +92,39 @@ export default function HomeScreen() {
     );
   };
 
-  const FridgePopup = ({ visible, onClose, fridgeItems }) => {
+  const FridgePopup = ({ visible, onClose, fridgeItems, toggleSelection }) => {
     return (
       <Modal transparent animationType="fade" visible={visible}>
         <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill}>
           <Pressable style={styles.backdrop} onPress={onClose} />
-
           <View style={styles.modalContainer}>
-            <Text style={styles.ingredientsTitle}>Ingredients</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+              }}
+            >
+              <Text style={styles.ingredientsTitle}>Ingredients</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <Feather name="x" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
             {fridgeItems.map((item) => (
-              <View key={item.id} style={styles.itemWrapper}>
-                <TouchableOpacity onPress={() => toggleSelection(item.id)}>
-                  <Text style={styles.checkbox}>
-                    {item.selected ? "☑️" : "⬜️"}
-                    <Text style={styles.item}>{item.ingredient}</Text>
-                  </Text>
-                </TouchableOpacity>
+              <View
+                key={item.id}
+                style={[
+                  styles.itemWrapper,
+                  { flexDirection: "row", alignItems: "center" },
+                ]}
+              >
+                <Checkbox
+                  value={item.selected}
+                  onValueChange={() => toggleSelection(item.id)}
+                  color={item.selected ? "#DA7635" : undefined}
+                />
+                <Text style={styles.item}>{item.ingredient}</Text>
               </View>
             ))}
           </View>
@@ -195,6 +214,7 @@ export default function HomeScreen() {
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
               fridgeItems={fridgeItems}
+              toggleSelection={toggleSelection}
             />
           </View>
         </View>
@@ -291,7 +311,6 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 12,
-    alignItems: "center",
     shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 4 },
@@ -310,9 +329,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     fontWeight: "bold",
     fontSize: 20,
+    paddingBottom: 10,
   },
   checkbox: {
     marginLeft: 10,
     fontSize: 20,
+    borderColor: "#DA7635",
+    borderWidth: 2,
   },
 });
