@@ -5,9 +5,13 @@ import { useEffect, useState } from "react";
 interface Recipe {
   ["Dish Name"]: string;
   ["Short Description"]: string;
-  ["List of Ingredients"]: string[];
+  ["List of Ingredients"]: {
+    ingredient: string;
+    quantity: string;
+  }[];
   ["Instructions"]: string[];
 }
+
 
 export default function Recipes() {
   const { data } = useLocalSearchParams();

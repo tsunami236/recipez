@@ -29,7 +29,7 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
-import { db, app, storage } from "../firebaseConfig";
+import { db, app, storage } from "../../firebaseConfig";
 import { TextInput } from "react-native-gesture-handler";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
@@ -182,19 +182,49 @@ export default function HomeScreen() {
     }
 
     const prompt = `Give me a few easy ${dishType} recipes ${
-      useRestrictions
-        ? `that follow these dietary restrictions: ${dietaryRestrictions}`
-        : ""
-    } using only the following ingredients: ${ingredients}. return the recipes in the following format: Dish Name\nShort Description\nTime (to cook)\nServings (number)\n
-    const prompt = `Give me a few easy ${dishType} recipes ${useRestrictions ? `that follow these dietary restrictions: ${dietaryRestrictions}` : ""
-      } using only the following ingredients: ${ingredients}. return the recipes in the following format (e.g. Dish Name: Scrambled Eggs\nShort Description: Hearty meal, etc.): Dish Name\nShort Description\nTime (to cook)\nServings (number)\n
-      Cuisine\nList of Ingredients (string array)\nInstructions (string array)\nNutrition Information (in the following format):\n
-      Calories\nProtein\nCarbohydrates\nSugar\nFat\nSaturated Fat\nFiber\nSodium\nCalcium\nIron. Remember that for the ingredients make the array with the ingredients and the quantity needed. Give in JSON format.`;
+      useRestrictions ? `that follow these dietary restrictions: ${dietaryRestrictions}` : ""
+    } using only the following ingredients: ${ingredients}. Return the recipes in the following JSON format:
+    
+    [
+      {
+        "Dish Name": "Scrambled Eggs",
+        "Short Description": "Hearty breakfast dish made with eggs and butter",
+        "Time": "10 minutes",
+        "Servings": 2,
+        "Cuisine": "American",
+        "List of Ingredients": [
+          { "ingredient": "Eggs", "quantity": "2" },
+          { "ingredient": "Butter", "quantity": "1 tbsp" }
+        ],
+        "Instructions": [
+          "Crack the eggs into a bowl.",
+          "Whisk the eggs.",
+          "Heat butter in a pan.",
+          "Cook eggs until fluffy."
+        ],
+        "Nutrition Information": {
+          "Calories": "200 kcal",
+          "Protein": "12g",
+          "Carbohydrates": "2g",
+          "Sugar": "1g",
+          "Fat": "15g",
+          "Saturated Fat": "6g",
+          "Fiber": "0g",
+          "Sodium": "150mg",
+          "Calcium": "50mg",
+          "Iron": "1.5mg"
+        }
+      }
+    ]
+    
+    Ensure the output is valid JSON and can be parsed in JavaScript.
+    `;
+    
 
     try {
       const recipes = await fetchGeminiResponse(prompt); // returns a string[] or structured data
       console.log(recipes);
-      router.replace({ pathname: "/generatedRecipes", params: { data: JSON.stringify(recipes.slice(1)) } });
+      router.replace({ pathname: "/generatedRecipes", params: { data: JSON.stringify(recipes) } });
     } catch (error) {
       console.error("Error fetching recipes:", error);
       Alert.alert("Error", "Something went wrong generating recipes.");
