@@ -1,18 +1,25 @@
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+} from "react-native";
 import { useState } from "react";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Fridge() {
   const [items, setItems] = useState([
-    { id: 1, name: 'Eggs', amount: 10 },
-    { id: 2, name: 'Cabbage', amount: 2 },
+    { id: 1, name: "Eggs", amount: 10 },
+    { id: 2, name: "Cabbage", amount: 2 },
   ]);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   //const [newAmount, setNewAmount] = useState<string>('');
 
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newAmount, setNewAmount] = useState('');
+  const [newName, setNewName] = useState("");
+  const [newAmount, setNewAmount] = useState("");
 
   const handleEditAmount = (id: number) => {
     setEditingItemId(id);
@@ -23,17 +30,17 @@ export default function Fridge() {
   };
 
   const handleSaveAmount = (id: number) => {
-    setItems(prevItems =>
-      prevItems.map(item => 
+    setItems((prevItems) =>
+      prevItems.map((item) =>
         item.id === id ? { ...item, amount: parseInt(newAmount) } : item
       )
     );
-    setEditingItemId(null); 
-    setNewAmount('');      
+    setEditingItemId(null);
+    setNewAmount("");
   };
 
   const handleDelete = (idToRemove: number) => {
-    setItems(prevItems => prevItems.filter(item => item.id !== idToRemove));
+    setItems((prevItems) => prevItems.filter((item) => item.id !== idToRemove));
   };
 
   const handleAdd = () => {
@@ -45,9 +52,9 @@ export default function Fridge() {
       amount: parseInt(newAmount),
     };
 
-    setItems(prevItems => [...prevItems, newItem]);
-    setNewName('');
-    setNewAmount('');
+    setItems((prevItems) => [...prevItems, newItem]);
+    setNewName("");
+    setNewAmount("");
     setShowAddForm(false);
   };
 
@@ -72,14 +79,18 @@ export default function Fridge() {
                         onChangeText={setNewAmount}
                         keyboardType="numeric"
                       />
-                      <TouchableOpacity onPress={() => handleSaveAmount(item.id)}>
+                      <TouchableOpacity
+                        onPress={() => handleSaveAmount(item.id)}
+                      >
                         <Text style={styles.itemAmount}>Save</Text>
                       </TouchableOpacity>
                     </>
                   ) : (
                     <>
                       <Text style={styles.itemAmount}> x{item.amount}</Text>
-                      <TouchableOpacity onPress={() => handleEditAmount(item.id)}>
+                      <TouchableOpacity
+                        onPress={() => handleEditAmount(item.id)}
+                      >
                         <Text style={styles.itemAmount}>Edit Amount</Text>
                       </TouchableOpacity>
                     </>
@@ -96,14 +107,14 @@ export default function Fridge() {
               <TextInput
                 style={styles.input}
                 placeholder="Food Name (ex: Eggs)"
-                placeholderTextColor= '#888'
+                placeholderTextColor="#888"
                 value={newName}
                 onChangeText={setNewName}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Amount (ex: 3)"
-                placeholderTextColor= '#888'
+                placeholderTextColor="#888"
                 value={newAmount}
                 onChangeText={setNewAmount}
                 keyboardType="numeric"
@@ -111,7 +122,7 @@ export default function Fridge() {
               <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
                 <Text style={styles.addButtonText}>Add</Text>
               </TouchableOpacity>
-              </View>
+            </View>
           )}
         </ScrollView>
       </View>
@@ -122,7 +133,7 @@ export default function Fridge() {
             <Text style={styles.addItemBoxText}>Add With Receipt</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setShowAddForm(prev => !prev)}>
+        <TouchableOpacity onPress={() => setShowAddForm((prev) => !prev)}>
           <View style={styles.plusButton}>
             <Text style={styles.plusText}>+</Text>
           </View>
@@ -138,10 +149,10 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
     marginTop: 50,
-    fontFamily: 'Poppins',
+    fontFamily: "Poppins",
     padding: 20,
   },
   content: {
@@ -149,102 +160,102 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    backgroundColor: '#FFFCF8',
+    backgroundColor: "#FFFCF8",
   },
   itemBox: {
-    backgroundColor: '#FFE2C6',
+    backgroundColor: "#FFE2C6",
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     margin: 10,
   },
   itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     flex: 1,
   },
   itemTitle: {
     fontSize: 20,
-    fontFamily: 'Poppins',
-    color: '#000000',
-    justifyContent: 'flex-start',
+    fontFamily: "Poppins",
+    color: "#000000",
+    justifyContent: "flex-start",
   },
   itemAmount: {
     fontSize: 16,
-    fontFamily: 'Poppins',
-    color: '#000000',
+    fontFamily: "Poppins",
+    color: "#000000",
   },
   itemEditContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   formBox: {
-    backgroundColor: '#f4f4f4',
+    backgroundColor: "#f4f4f4",
     padding: 15,
     borderRadius: 10,
     marginVertical: 20,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ccc',
-    fontFamily: 'Poppins',
+    borderColor: "#ccc",
+    fontFamily: "Poppins",
     marginBottom: 12,
     fontSize: 16,
-    color: '#000',
+    color: "#000",
   },
   addButton: {
-    backgroundColor: '#DA7635',
+    backgroundColor: "#DA7635",
     paddingVertical: 10,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addButtonText: {
-    color: '#fff',
-    fontFamily: 'Poppins',
+    color: "#fff",
+    fontFamily: "Poppins",
     fontSize: 16,
   },
   addItemBox: {
-    backgroundColor: '#DA7635',
+    backgroundColor: "#DA7635",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginRight: 10,
   },
   addItemBoxText: {
-    color: '#FFFCF8',
+    color: "#FFFCF8",
     fontSize: 20,
-    fontFamily: 'Poppins',
+    fontFamily: "Poppins",
   },
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
     marginBottom: 100,
     marginRight: 50,
   },
   plusButton: {
-    backgroundColor: '#FFFCF8',
+    backgroundColor: "#FFFCF8",
     width: 50,
     height: 50,
     borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
     borderWidth: 2,
-    borderColor: '#000000',
+    borderColor: "#000000",
   },
   plusText: {
-    color: '#000000',
+    color: "#000000",
     fontSize: 36,
     lineHeight: 36,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
