@@ -333,9 +333,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins",
     color: "#000000",
     justifyContent: "flex-start",
-    fontFamily: 'Poppins',
-    color: '#000000',
-    justifyContent: 'flex-start',
     
   },
   itemAmount: {
