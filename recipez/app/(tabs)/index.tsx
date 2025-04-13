@@ -162,14 +162,14 @@ export default function HomeScreen() {
     }
 
     const prompt = `Give me a few easy ${dishType} recipes ${useRestrictions ? `that follow these dietary restrictions: ${dietaryRestrictions}` : ""
-      } using only the following ingredients: ${ingredients}. return the recipes in the following format: Dish Name\nShort Description\nTime (to cook)\nServings (number)\n
+      } using only the following ingredients: ${ingredients}. return the recipes in the following format (e.g. Dish Name: Scrambled Eggs\nShort Description: Hearty meal, etc.): Dish Name\nShort Description\nTime (to cook)\nServings (number)\n
       Cuisine\nList of Ingredients (string array)\nInstructions (string array)\nNutrition Information (in the following format):\n
-      Calories\nProtein\nCarbohydrates\nSugar\nFat\nSaturated Fat\nFiber\nSodium\nCalcium\nIron. Remember that for the ingredients make the array with the ingredients and the quantity needed.`;
+      Calories\nProtein\nCarbohydrates\nSugar\nFat\nSaturated Fat\nFiber\nSodium\nCalcium\nIron. Remember that for the ingredients make the array with the ingredients and the quantity needed. Give in JSON format.`;
 
     try {
       const recipes = await fetchGeminiResponse(prompt); // returns a string[] or structured data
       console.log(recipes);
-      router.replace({ pathname: "/recipe", params: { data: JSON.stringify(recipes) } });
+      router.replace({ pathname: "/generatedRecipes", params: { data: JSON.stringify(recipes.slice(1)) } });
     } catch (error) {
       console.error("Error fetching recipes:", error);
       Alert.alert("Error", "Something went wrong generating recipes.");
