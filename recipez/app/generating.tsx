@@ -20,13 +20,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    justifyContent: "center",
+    paddingBottom: 80
   },
   animation: {
     width: 300,
-    height: 200
+    height: 200,
   },
   text: {
     marginTop: 30,
