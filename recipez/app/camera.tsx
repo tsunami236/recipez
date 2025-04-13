@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import { GOOGLEAPIKEY } from "./apiKey";
 
 export default function CameraScreen() {
   const [imageUris, setImageUris] = useState<string[]>([]);
@@ -64,7 +65,7 @@ export default function CameraScreen() {
   };
 
   const callGoogleVisionAPI = async (base64: string) => {
-    const API_KEY = "AIzaSyDS2ywDv7v0x4ufI2T9575HgvpWdRkanno"; // Replace with your actual API key
+    const API_KEY = GOOGLEAPIKEY; // Replace with your actual API key
 
     const body = {
       requests: [

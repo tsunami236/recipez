@@ -14,6 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 
 import addReceipt from "@/hooks/addReceipt";
+import { GOOGLEAPIKEY } from "../apiKey";
 
 export default function Fridge() {
   const [items, setItems] = useState([
@@ -169,7 +170,7 @@ export default function Fridge() {
   };
 
   const callGoogleVisionAPI = async (base64: string) => {
-    const API_KEY = "AIzaSyDS2ywDv7v0x4ufI2T9575HgvpWdRkanno"; // Replace with your actual API key
+    const API_KEY = GOOGLEAPIKEY; // Replace with your actual API key
 
     const body = {
       requests: [

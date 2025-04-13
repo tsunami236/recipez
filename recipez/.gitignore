@@ -40,3 +40,5 @@ app-example
 firebaseConfig.ts
 
 .env
+
+apiKey.ts
