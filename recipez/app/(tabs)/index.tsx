@@ -159,13 +159,13 @@ export default function HomeScreen() {
     router.push("/generating");
 
     let ingredients = "";
+    const ingredientList: string[] = [];
 
     if (useIngredients) {
       try {
         const querySnapshot = await getDocs(
           collection(db, "Users", "0Qa8zrf8HHb0VKboLAjV", "fridge")
         );
-        const ingredientList: string[] = [];
 
         querySnapshot.forEach((doc) => {
           const data = doc.data();
@@ -179,6 +179,13 @@ export default function HomeScreen() {
       } catch (error) {
         console.error("Error fetching fridge ingredients:", error);
       }
+    } else {
+      fridgeItems.forEach((item) => {
+        if(item.selected) {
+          ingredientList.push(item.ingredient);
+        }
+      })
+      ingredients = ingredientList.join(", ");
     }
 
     const prompt = `Give me a few easy ${dishType} recipes ${
